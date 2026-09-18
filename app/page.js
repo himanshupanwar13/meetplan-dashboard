@@ -83,8 +83,21 @@ export default async function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="py-4 text-center text-xs text-gray-400 border-t border-gray-200/40">
-        © {new Date().getFullYear()} MeetPlan. All rights reserved.
+      <footer className="py-5 px-6 border-t border-gray-200/60 bg-white text-xs text-gray-500">
+        <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center">
+          <span>© {new Date().getFullYear()} MeetPlan. All rights reserved.</span>
+          <div className="flex items-center gap-4 font-medium">
+            <Link href="/" className="hover:text-gray-900 transition">
+              Home
+            </Link>
+            <Link href="/login" className="hover:text-gray-900 transition">
+              Login
+            </Link>
+            <Link href="/privacy" className="text-emerald-700 hover:text-emerald-900 font-semibold transition">
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
       </footer>
     </main>
   );

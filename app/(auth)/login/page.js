@@ -58,8 +58,26 @@ export default function LoginPage() {
         </div>
 
         <p className="text-[11px] text-gray-400">
-          By signing in, you agree to MeetPlan terms and privacy policy.
+          By signing in, you agree to MeetPlan terms and{" "}
+          <Link
+            href="/privacy"
+            className="text-emerald-700 hover:text-emerald-900 underline font-medium"
+          >
+            privacy policy
+          </Link>
+          .
         </p>
+      </div>
+
+      {/* Footer Navigation */}
+      <div className="mt-6 flex items-center gap-4 text-xs font-medium text-gray-500">
+        <Link href="/" className="hover:text-gray-900 transition">
+          Home
+        </Link>
+        <span>•</span>
+        <Link href="/privacy" className="hover:text-emerald-800 transition">
+          Privacy Policy
+        </Link>
       </div>
     </main>
   );
