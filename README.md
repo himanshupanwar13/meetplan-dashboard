@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+﻿# MeetPlan Dashboard
+
+A Next.js dashboard app that displays Google Calendar events. Built as a technical assignment.
+
+## Tech Stack
+
+- **Next.js 15** (App Router)
+- **Tailwind CSS** for styling
+- **NextAuth.js** for Google OAuth
+- **Google Calendar API** for events
+- **date-fns** for date formatting
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone & install
+
+```bash
+git clone <your-repo>
+cd meetplan-dashboard
+npm install
+```
+
+### 2. Set up environment variables
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in `.env.local` with:
+
+| Variable | Where to get it |
+|---|---|
+| `GOOGLE_CLIENT_ID` | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) |
+| `GOOGLE_CLIENT_SECRET` | Google Cloud Console |
+| `NEXTAUTH_SECRET` | Run `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | `http://localhost:3000` for local dev |
+
+> **Google OAuth setup:** Add `http://localhost:3000/api/auth/callback/google`
+> as an Authorized Redirect URI in your OAuth 2.0 Client.
+> Enable the **Google Calendar API** in your project.
+
+### 3. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+meetplan-dashboard/
+├── app/
+│   ├── (auth)/login/       # Sign-in page
+│   ├── api/
+│   │   ├── auth/[...nextauth]/  # NextAuth handler
+│   │   └── calendar/            # Google Calendar API route
+│   ├── dashboard/          # Protected dashboard page
+│   ├── layout.js           # Root layout
+│   └── providers.js        # Client-side SessionProvider
+├── components/
+│   ├── ui/                 # Reusable primitives (Button, Card, Avatar)
+│   ├── dashboard/          # Layout components (Sidebar, Header)
+│   └── calendar/           # Calendar-specific components (EventCard)
+├── hooks/
+│   └── useCalendarEvents.js  # Custom hook for fetching events
+├── lib/
+│   ├── auth.js             # NextAuth config & Google OAuth options
+│   └── googleCalendar.js   # Google Calendar API helper
+└── .env.example            # Environment variable template
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Push to GitHub and deploy on [Vercel](https://vercel.com). Set the environment
+variables in the Vercel project settings. Update `NEXTAUTH_URL` to your
+production URL and add it as an authorized redirect URI in Google Cloud Console.
