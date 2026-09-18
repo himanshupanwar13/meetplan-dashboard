@@ -15,6 +15,9 @@ const inter = Inter({
 export const metadata = {
   title: "MeetPlan",
   description: "Your smart meeting planning dashboard",
+  verification: {
+    google: "Srx54uhTSyXAYvWmn0HzbdBvcvhg_GjIreVytHJdgNw",
+  },
 };
 
 export default function RootLayout({ children }) {
