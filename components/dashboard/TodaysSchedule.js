@@ -31,6 +31,7 @@ const PLATFORM_DOTS = {
 
 export default function TodaysSchedule({
   schedule = MOCK_TODAYS_SCHEDULE,
+  isGoogleConnected = false,
   onSeeFullDay,
 }) {
   const hasEvents = schedule && schedule.length > 0;
@@ -107,8 +108,16 @@ export default function TodaysSchedule({
       ) : (
         <div className="py-8 flex flex-col items-center justify-center text-center space-y-1.5">
           <Calendar className="w-6 h-6 text-gray-300" />
-          <p className="text-xs font-medium text-gray-700">No events today</p>
-          <p className="text-[11px] text-gray-400">Enjoy your free time!</p>
+          <p className="text-xs font-medium text-gray-700">
+            {isGoogleConnected
+              ? "No events today"
+              : "Connect Google Calendar to see today's schedule."}
+          </p>
+          <p className="text-[11px] text-gray-400">
+            {isGoogleConnected
+              ? "Enjoy your free time!"
+              : "Sync your Google account to track today's meetings."}
+          </p>
         </div>
       )}
     </Card>

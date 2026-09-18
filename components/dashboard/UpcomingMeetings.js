@@ -34,6 +34,7 @@ export default function UpcomingMeetings({
   loading = false,
   error = null,
   isGoogleConnected = false,
+  isDemo = false,
   onRefetch,
   onViewAll,
 }) {
@@ -52,11 +53,11 @@ export default function UpcomingMeetings({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Google Calendar
             </span>
-          ) : (
+          ) : isDemo ? (
             <span className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
               Demo Preview
             </span>
-          )}
+          ) : null}
 
           {onRefetch && (
             <button
@@ -132,10 +133,14 @@ export default function UpcomingMeetings({
             <Calendar className="w-5 h-5" />
           </div>
           <p className="text-xs font-semibold text-gray-800">
-            No upcoming meetings scheduled
+            {isGoogleConnected
+              ? "No upcoming meetings scheduled"
+              : "Connect Google Calendar to see your upcoming meetings."}
           </p>
           <p className="text-[11px] text-gray-400 max-w-xs">
-            Your Google Calendar schedule is currently clear for the upcoming days.
+            {isGoogleConnected
+              ? "Your Google Calendar schedule is currently clear for the upcoming days."
+              : "Authorize Google Calendar to automatically display and sync your upcoming events here."}
           </p>
         </div>
       )}

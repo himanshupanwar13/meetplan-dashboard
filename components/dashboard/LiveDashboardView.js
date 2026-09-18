@@ -26,12 +26,16 @@ function getGreeting() {
   return "Good Evening,";
 }
 
-export default function LiveDashboardView() {
+export default function LiveDashboardView({ isDemo = false }) {
   const { events, loading, error, isGoogleConnected, refetch } =
     useCalendarEvents();
 
   // Determine meetings list: live Google events if available, else mock fallback in demo mode
-  const displayMeetings = isGoogleConnected ? events : MOCK_UPCOMING_MEETINGS;
+  const displayMeetings = isGoogleConnected
+    ? events
+    : isDemo
+      ? MOCK_UPCOMING_MEETINGS
+      : [];
 
   // Today's meetings: filter from live events if connected
   const liveTodayMeetings = isGoogleConnected
@@ -39,25 +43,41 @@ export default function LiveDashboardView() {
     : [];
 
   const displaySchedule = isGoogleConnected
-    ? liveTodayMeetings.length > 0
-      ? liveTodayMeetings
-      : [] // empty schedule for today if none scheduled
-    : MOCK_TODAYS_SCHEDULE;
+    ? liveTodayMeetings
+    : isDemo
+      ? MOCK_TODAYS_SCHEDULE
+      : [];
 
   const todayMeetingsCount = isGoogleConnected
     ? liveTodayMeetings.length
-    : 8;
+    : isDemo
+      ? 8
+      : 0;
 
-  // Synchronize stats with live counts when connected
+  // Key Statistics:
+  // - In demo mode (local dev ?demo=true only): use full MOCK_STATS
+  // - When Google is connected: live upcoming count and clear indicators
+  // - When not connected and not demo mode: clean empty/not connected state ("—" / "Not connected")
   const updatedStats = MOCK_STATS.map((stat) => {
-    if (stat.id === "upcoming" && isGoogleConnected) {
+    if (isDemo) {
+      return stat;
+    }
+
+    if (stat.id === "upcoming") {
       return {
         ...stat,
-        value: String(events.length),
-        change: `${events.length} synced from Google`,
+        value: isGoogleConnected ? String(events.length) : "0",
+        change: isGoogleConnected
+          ? `${events.length} synced from Google`
+          : "Not connected",
       };
     }
-    return stat;
+
+    return {
+      ...stat,
+      value: "—",
+      change: "Not connected",
+    };
   });
 
   return (
@@ -80,6 +100,7 @@ export default function LiveDashboardView() {
           loading={loading}
           error={error}
           isGoogleConnected={isGoogleConnected}
+          isDemo={isDemo}
           onRefetch={refetch}
         />
 
@@ -93,7 +114,10 @@ export default function LiveDashboardView() {
         <DashboardCalendar events={displayMeetings} />
 
         {/* 2. Today's Schedule Timeline */}
-        <TodaysSchedule schedule={displaySchedule} />
+        <TodaysSchedule
+          schedule={displaySchedule}
+          isGoogleConnected={isGoogleConnected}
+        />
 
         {/* 3. "+ New Meeting" Action Button */}
         <NewMeetingButton />

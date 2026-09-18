@@ -34,7 +34,7 @@ export default async function DashboardPage({ searchParams }) {
 
   return (
     <DashboardLayout user={user}>
-      <LiveDashboardView user={user} />
+      <LiveDashboardView user={user} isDemo={isDemo} />
     </DashboardLayout>
   );
 }
