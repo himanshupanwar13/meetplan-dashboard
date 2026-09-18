@@ -23,16 +23,25 @@ export function useCalendarEvents() {
   useEffect(() => {
     let ignore = false;
 
-    async function loadEvents() {
+    async function loadEvents(attempt = 1) {
       try {
         const res = await fetch("/api/calendar");
 
         if (ignore) return;
 
         if (res.status === 401) {
+          // On first OAuth callback redirect, the browser might take a brief instant
+          // for the session cookie to be recognized. Retry once after 600ms if on first attempt.
+          if (attempt === 1) {
+            await new Promise((resolve) => setTimeout(resolve, 600));
+            if (!ignore) {
+              return loadEvents(attempt + 1);
+            }
+          }
           // Unauthenticated or demo mode
           setIsGoogleConnected(false);
           setEvents([]);
+          if (!ignore) setLoading(false);
           return;
         }
 
@@ -47,19 +56,17 @@ export function useCalendarEvents() {
         setEvents(data.events || []);
         setIsGoogleConnected(Boolean(data.isGoogleConnected));
         setError(null);
+        if (!ignore) setLoading(false);
       } catch (err) {
         if (ignore) return;
         console.warn("Could not load Google Calendar events:", err.message);
         setError(err.message);
         setIsGoogleConnected(false);
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
-    loadEvents();
+    loadEvents(1);
 
     return () => {
       ignore = true;

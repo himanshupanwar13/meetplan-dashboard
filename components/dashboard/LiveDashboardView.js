@@ -56,11 +56,20 @@ export default function LiveDashboardView({ isDemo = false }) {
 
   // Key Statistics:
   // - In demo mode (local dev ?demo=true only): use full MOCK_STATS
+  // - When loading: show clean loading dashes without premature "Not connected" labels
   // - When Google is connected: live upcoming count and clear indicators
   // - When not connected and not demo mode: clean empty/not connected state ("—" / "Not connected")
   const updatedStats = MOCK_STATS.map((stat) => {
     if (isDemo) {
       return stat;
+    }
+
+    if (loading) {
+      return {
+        ...stat,
+        value: "—",
+        change: "Syncing...",
+      };
     }
 
     if (stat.id === "upcoming") {
@@ -88,7 +97,7 @@ export default function LiveDashboardView({ isDemo = false }) {
         <WelcomeSection
           greeting={getGreeting()}
           title="Welcome back!"
-          meetingsCount={todayMeetingsCount}
+          meetingsCount={loading ? "..." : todayMeetingsCount}
         />
 
         {/* 2. Key Statistics Grid (4 cards) */}
@@ -117,6 +126,7 @@ export default function LiveDashboardView({ isDemo = false }) {
         <TodaysSchedule
           schedule={displaySchedule}
           isGoogleConnected={isGoogleConnected}
+          loading={loading}
         />
 
         {/* 3. "+ New Meeting" Action Button */}

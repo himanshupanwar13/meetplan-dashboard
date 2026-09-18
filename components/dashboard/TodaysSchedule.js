@@ -32,6 +32,7 @@ const PLATFORM_DOTS = {
 export default function TodaysSchedule({
   schedule = MOCK_TODAYS_SCHEDULE,
   isGoogleConnected = false,
+  loading = false,
   onSeeFullDay,
 }) {
   const hasEvents = schedule && schedule.length > 0;
@@ -50,8 +51,28 @@ export default function TodaysSchedule({
         </button>
       </div>
 
-      {/* Schedule Items */}
-      {hasEvents ? (
+      {/* Loading Skeleton */}
+      {loading ? (
+        <div className="divide-y divide-gray-100/70 py-1" aria-busy="true">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="py-3 flex items-center justify-between gap-2.5 animate-pulse"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className="w-16 h-3.5 bg-gray-200 rounded" />
+                <div className="w-2 h-2 rounded-full bg-gray-200 shrink-0" />
+                <div className="w-6 h-6 rounded-md bg-gray-200 shrink-0" />
+                <div className="space-y-1.5 flex-1 max-w-[140px]">
+                  <div className="h-3.5 bg-gray-200 rounded w-full" />
+                  <div className="h-2.5 bg-gray-100 rounded w-2/3" />
+                </div>
+              </div>
+              <div className="w-4 h-4 bg-gray-100 rounded" />
+            </div>
+          ))}
+        </div>
+      ) : hasEvents ? (
         <div className="divide-y divide-gray-100/70">
           {schedule.map((item) => {
             const PlatformIcon =
