@@ -8,13 +8,14 @@
 
 import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { MeetPlanLogoIcon } from "@/components/icons/PlatformIcons";
 
 export default function LoginPage() {
   const isDev = process.env.NODE_ENV === "development";
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#FBFBF9] p-4">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-[#FBFBF9] p-4">
       <div className="bg-white rounded-3xl border border-gray-200/80 shadow-sm p-8 sm:p-10 flex flex-col items-center gap-6 w-full max-w-md text-center">
         {/* Logo & Title */}
         <div className="flex flex-col items-center gap-3">
@@ -69,14 +70,15 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Footer Navigation */}
-      <div className="mt-6 flex items-center gap-4 text-xs font-medium text-gray-500">
-        <Link href="/" className="hover:text-gray-900 transition">
-          Home
-        </Link>
-        <span>•</span>
-        <Link href="/privacy" className="hover:text-emerald-800 transition">
-          Privacy Policy
+      {/* Back to Home Icon */}
+      <div className="mt-6 flex items-center justify-center">
+        <Link
+          href="/"
+          aria-label="Back to home"
+          title="Back to home"
+          className="text-gray-400 hover:text-gray-700 transition p-1"
+        >
+          <ArrowLeft className="w-5 h-5" />
         </Link>
       </div>
     </main>
