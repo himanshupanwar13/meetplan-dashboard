@@ -1,45 +1,75 @@
-﻿# MeetPlan Dashboard
+# MeetPlan Dashboard
 
-A Next.js dashboard app that displays Google Calendar events. Built as a technical assignment.
+MeetPlan is a responsive meeting-planning dashboard built with Next.js. It connects to Google Calendar through OAuth and displays upcoming calendar events in a clean, responsive dashboard.
+
+## Live Demo
+https://meetplan-dashboard-six.vercel.app
+
+## GitHub
+https://github.com/himanshupanwar13/meetplan-dashboard
+
+## Features
+- Responsive desktop, tablet, and mobile UI
+- Google OAuth authentication with NextAuth.js
+- Read-only Google Calendar integration
+- Fetches and displays upcoming Google Calendar events
+- Today's schedule and upcoming meetings
+- Dynamic monthly calendar with event indicators
+- Meeting type summaries
+- Protected dashboard routes
+- Login and logout flow
+- Public homepage and privacy policy
 
 ## Tech Stack
-
-- **Next.js 15** (App Router)
-- **Tailwind CSS** for styling
-- **NextAuth.js** for Google OAuth
-- **Google Calendar API** for events
-- **date-fns** for date formatting
+- Next.js 16
+- React 19
+- Tailwind CSS
+- NextAuth.js
+- Google Calendar API
+- date-fns
+- Lucide React
 
 ## Getting Started
 
-### 1. Clone & install
+### 1. Clone and install
 
 ```bash
-git clone <your-repo>
+git clone https://github.com/himanshupanwar13/meetplan-dashboard.git
 cd meetplan-dashboard
 npm install
 ```
 
-### 2. Set up environment variables
+### 2. Environment variables
+
+Create `.env.local` from `.env.example` and configure:
 
 ```bash
-cp .env.example .env.local
+GOOGLE_CLIENT_ID=your-google-client-id-here
+GOOGLE_CLIENT_SECRET=your-google-client-secret-here
+NEXTAUTH_SECRET=your-nextauth-secret-here
+NEXTAUTH_URL=http://localhost:3000
 ```
 
-Fill in `.env.local` with:
+For local development:
+`NEXTAUTH_URL=http://localhost:3000`
 
-| Variable | Where to get it |
-|---|---|
-| `GOOGLE_CLIENT_ID` | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) |
-| `GOOGLE_CLIENT_SECRET` | Google Cloud Console |
-| `NEXTAUTH_SECRET` | Run `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | `http://localhost:3000` for local dev |
+Never commit `.env.local` or secrets.
 
-> **Google OAuth setup:** Add `http://localhost:3000/api/auth/callback/google`
-> as an Authorized Redirect URI in your OAuth 2.0 Client.
-> Enable the **Google Calendar API** in your project.
+### 3. Google Cloud setup
 
-### 3. Run locally
+- Enable Google Calendar API.
+- Configure Google OAuth.
+- Add:
+  `http://localhost:3000/api/auth/callback/google`
+- Add the production callback:
+  `https://meetplan-dashboard-six.vercel.app/api/auth/callback/google`
+
+The application requests:
+`https://www.googleapis.com/auth/calendar.readonly`
+
+If the OAuth application is in Testing mode, only configured test users can authenticate.
+
+### 4. Run locally
 
 ```bash
 npm run dev
@@ -52,27 +82,80 @@ Open [http://localhost:3000](http://localhost:3000)
 ```
 meetplan-dashboard/
 ├── app/
-│   ├── (auth)/login/       # Sign-in page
+│   ├── (auth)/
+│   │   └── login/
+│   │       └── page.js               # Sign-in page with Google Calendar OAuth & back navigation
 │   ├── api/
-│   │   ├── auth/[...nextauth]/  # NextAuth handler
-│   │   └── calendar/            # Google Calendar API route
-│   ├── dashboard/          # Protected dashboard page
-│   ├── layout.js           # Root layout
-│   └── providers.js        # Client-side SessionProvider
+│   │   ├── auth/
+│   │   │   └── [...nextauth]/
+│   │   │       └── route.js          # NextAuth API route handler
+│   │   └── calendar/
+│   │       └── route.js              # Server route fetching Google Calendar events
+│   ├── dashboard/
+│   │   ├── [...slug]/
+│   │   │   └── page.js               # Catch-all route for sub-pages (meetings, availability, etc.)
+│   │   └── page.js                   # Main protected dashboard page
+│   ├── privacy/
+│   │   └── page.js                   # Public Privacy Policy compliant with Google API policy
+│   ├── globals.css                   # Tailwind CSS v4 styling & theme setup
+│   ├── layout.js                     # Root layout with font configuration & metadata
+│   ├── page.js                       # Public landing page with verification metadata
+│   └── providers.js                  # Client-side NextAuth SessionProvider wrapper
 ├── components/
-│   ├── ui/                 # Reusable primitives (Button, Card, Avatar)
-│   ├── dashboard/          # Layout components (Sidebar, Header)
-│   └── calendar/           # Calendar-specific components (EventCard)
+│   ├── calendar/
+│   │   └── EventCard.js              # Event card with platform badges and join actions
+│   ├── dashboard/
+│   │   ├── DashboardCalendar.js      # Monthly calendar view with active event day dots
+│   │   ├── DashboardLayout.js        # Shared dashboard shell with header, sidebar, and content area
+│   │   ├── Header.js                 # Top navigation with live search, notifications, & user avatar
+│   │   ├── LiveDashboardView.js      # Live dashboard client orchestrator with refresh states
+│   │   ├── MeetingTypes.js           # Meeting type summaries and stats
+│   │   ├── NewMeetingButton.js       # New meeting action trigger
+│   │   ├── Sidebar.js                # Collapsible navigation sidebar with exact route matching
+│   │   ├── StatCard.js               # Reusable metric card with delta indicator
+│   │   ├── StatsGrid.js              # 4-column summary metric grid
+│   │   ├── TodaysSchedule.js         # Daily chronological schedule timeline
+│   │   ├── UpcomingMeetings.js       # Upcoming meeting list with platform actions
+│   │   └── WelcomeSection.js         # Personalized user greeting and date banner
+│   ├── icons/
+│   │   └── PlatformIcons.js          # Custom SVG icons including brand logo & platform marks
+│   └── ui/
+│       ├── Avatar.js                 # User profile avatar with fallback initials & status dot
+│       ├── Button.js                 # Reusable button primitive
+│       └── Card.js                   # Rounded container card primitive
+├── data/
+│   └── dashboardMockData.js          # Fallback demo data for development mode
 ├── hooks/
-│   └── useCalendarEvents.js  # Custom hook for fetching events
+│   └── useCalendarEvents.js          # React hook managing event fetching, loading, & errors
 ├── lib/
-│   ├── auth.js             # NextAuth config & Google OAuth options
-│   └── googleCalendar.js   # Google Calendar API helper
-└── .env.example            # Environment variable template
+│   ├── auth.js                       # NextAuth options & Google OAuth token persistence
+│   └── googleCalendar.js             # Server-side Google Calendar API fetcher & normalizer
+├── .env.example                      # Template for required environment variables
+├── package.json                      # Project metadata, dependencies, and build scripts
+└── README.md                         # Project documentation and assignment overview
 ```
+
+## Architecture
+
+- **NextAuth handles Google OAuth**: Handles the complete OAuth 2.0 authorization code flow, securely authenticating users with their Google account.
+- **Server API Route**: Calendar events are fetched through the Next.js server route (`/api/calendar`), acting as a secure backend proxy to Google's Calendar REST API.
+- **Server-Side Token Security**: OAuth access tokens and refresh tokens are stored securely in encrypted HTTP-only session tokens managed by NextAuth on the server. They are never exposed to the client bundle.
+- **Read-Only Calendar Access**: The application exclusively requests `calendar.readonly` scope. It cannot edit, create, or delete user calendar events.
+- **Real Calendar Data**: The dashboard retrieves and visualizes real upcoming Google Calendar events, displaying join links, meeting platforms (Google Meet, Zoom, Microsoft Teams), attendees, and event times.
 
 ## Deployment
 
-Push to GitHub and deploy on [Vercel](https://vercel.com). Set the environment
-variables in the Vercel project settings. Update `NEXTAUTH_URL` to your
-production URL and add it as an authorized redirect URI in Google Cloud Console.
+Production:
+https://meetplan-dashboard-six.vercel.app
+
+Production environment variables are configured securely directly within the Vercel Project Settings dashboard. No secrets or credentials are ever committed to version control.
+
+## Assignment
+
+This project was created as a Full Stack Developer technical assignment, focusing on:
+- **Reference design recreation**: Faithfully matching the provided visual reference in typography, brand colors, layout, and visual rhythm.
+- **Responsive UI**: Seamlessly adapting across mobile phones, tablets, and wide desktop screens.
+- **Reusable component structure**: Clean separation between modular layout components, UI primitives, and data hooks.
+- **Google OAuth**: Robust authentication lifecycle using NextAuth.js with session persistence.
+- **Google Calendar API integration**: Real-time server-side fetching, data normalization, and platform detection.
+- **Production deployment**: Fully configured, SSL-enabled production deployment on Vercel with Google Search Console verification and a public privacy policy.
